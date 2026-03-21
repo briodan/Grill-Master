@@ -1,0 +1,164 @@
+# GrillMaster - Home Assistant Integration
+
+A custom [Home Assistant](https://www.home-assistant.io/) integration for monitoring and controlling pellet grills over the local network via HTTP JSON-RPC.
+
+Built for the **LG1000BL (Black Label)** series, but should work with other models using the same Mongoose OS ESP32 controller (Control Board 8).
+
+> **Disclaimer**: This project is **unofficial** and is not affiliated with, endorsed by, sponsored by, or supported by any grill manufacturer. All product names, trademarks, and registered trademarks are property of their respective owners. This software communicates with the grill's local network interface using reverse-engineered protocols — use at your own risk.
+
+## Features
+
+- **Temperature Monitoring** — Grill temperature, set point, and up to 2 meat probe temperatures, updating every 5 seconds
+- **Grill Control** — Set target temperature (180-600F in 5F increments), turn grill off
+- **Light Control** — Toggle the grill light on/off
+- **Status Monitoring** — Fan, auger motor, heater, primer states plus error detection (no pellets, high temp, igniter, fan, motor errors)
+- **DHCP Discovery** — Automatically detects the grill on your network and handles IP address changes
+- **Cloud Sync** (optional) — POST temperature data to a configurable URL on every poll cycle
+
+## Supported Hardware
+
+| Model | Control Board | Status |
+|---|---|---|
+| LG1000BL (Black Label) | 8 | Tested |
+| LG0800BL, LG1200BL, LG300BL | 8 | Should work (untested) |
+| LGV4BL | 8 | Should work (untested, 130-420F range) |
+| LG800FL/FP, LG1200FL/FP (Founders) | 9 | May work (untested) |
+
+**Requirements**: The grill must be connected to your local WiFi network. This integration communicates via HTTP JSON-RPC on port 80 — no cloud account or Bluetooth required. Tested on firmware 0.2.3 (unauthenticated). Firmware 0.5.7+ may require authentication (not yet supported).
+
+## Installation
+
+### HACS (Recommended)
+
+1. Open HACS in your Home Assistant instance
+2. Click the 3-dot menu → **Custom repositories**
+3. Add this repository URL and select **Integration** as the category
+4. Click **Download**
+5. Restart Home Assistant
+
+### Manual
+
+1. Copy the `custom_components/grill_master/` folder into your Home Assistant `config/custom_components/` directory
+2. Restart Home Assistant
+
+### Setup
+
+1. Go to **Settings → Devices & Services → + Add Integration**
+2. Search for **"Grill Master"**
+3. Enter your grill's IP address
+4. (Optional) Configure cloud sync endpoint
+5. Done — sensors appear immediately
+
+## Entities
+
+### Sensors
+| Entity | Description |
+|---|---|
+| Grill Temperature | Current temperature inside the grill |
+| Grill Set Point | Target temperature the grill is maintaining |
+| Probe 1 Temperature | Meat probe 1 reading |
+| Probe 1 Target | Meat probe 1 target temperature |
+| Probe 2 Temperature | Meat probe 2 reading |
+
+### Binary Sensors
+| Entity | Description |
+|---|---|
+| Grill Power | Whether the grill is running |
+| Fan | Fan state |
+| Light | Light state |
+| Auger Motor | Pellet auger motor state |
+| Heater | Igniter/heater state |
+| Primer | Primer motor state |
+| No Pellets | Pellet hopper empty warning |
+| High Temperature Error | Overtemp error |
+| Fan/Igniter/Motor Error | Component error flags |
+
+### Climate
+| Entity | Description |
+|---|---|
+| Grill | Set temperature (180-600F, 5F steps), HEAT/OFF mode |
+
+### Switch
+| Entity | Description |
+|---|---|
+| Light | Toggle grill light on/off (only functional on models with a light — e.g., LG800FL, LG1200FL) |
+
+> **Note**: Not all models have a physical light. The LG1000BL, LG0800BL, and most Pit Boss models do **not** have a light. The switch entity is always created but will have no effect on grills without the hardware. The Founders series (LG800FL, LG1200FL) does have a light.
+
+## Example Automation: Temperature Drift Alarm
+
+An example automation that alerts when the grill temperature drifts more than 20F from the set point is included in `ha_automation_grill_temp_drift.yaml`. Paste it into the HA automation YAML editor.
+
+## Architecture
+
+```
+Home Assistant
+  └── custom_components/grill_master/
+        │
+        ├── DataUpdateCoordinator (polls every 5s)
+        │     ├── GET http://<grill-ip>/rpc/PB.GetState
+        │     │     └── Decodes FE0B (status) + FE0C (temperature) hex payloads
+        │     └── Optional POST to cloud endpoint
+        │
+        ├── sensor.py        — Temperature sensors
+        ├── binary_sensor.py — Status & error binary sensors
+        ├── climate.py       — Temperature control (set temp, HEAT/OFF)
+        └── switch.py        — Light control
+```
+
+### How Grill Communication Works
+
+The LG1000BL uses an ESP32 running Mongoose OS with an HTTP JSON-RPC interface. The integration polls `PB.GetState` which returns two hex-encoded MCU payloads:
+
+- **FE0B** (status) — Power state, error flags, fan/motor/heater/light states, recipe info
+- **FE0C** (temperatures) — Grill temp, set point, probe 1-4 temperatures
+
+Temperatures are encoded as 3 bytes each (hundreds, tens, ones digits). The value `960` is a sentinel meaning "probe not connected."
+
+Commands are sent via `PB.SendMCUCommand` with hex payloads (e.g., `FE0102FF` = power off, `FE0201FF` = light on).
+
+## Known Limitations & Future Work
+
+### Firmware Authentication (Not Yet Supported)
+
+This integration works with **firmware 0.2.3**, which has no authentication on the local RPC interface. Newer firmware versions add a time-based authentication mechanism:
+
+- A `PB.GetTime` endpoint returns device uptime
+- Commands require a `psw` parameter: the grill password encrypted with a key derived from the device uptime and a fixed 8-byte seed (`[0x8F, 0x80, 0x19, 0xCF, 0x77, 0x6C, 0xFE, 0xB7]`)
+- The cipher uses XOR encryption with 16 bytes of random padding and key mutation per byte
+
+The full algorithm is documented in `documentation/features/grill-communication/trail/2026-03-20-firmware-auth-research.md` with a step-by-step implementation plan. Contributions welcome.
+
+### Other Limitations
+
+- **Local network only** — The grill and Home Assistant must be on the same network
+- **No BLE support** — This integration uses HTTP only. For Bluetooth, see [ha-pitboss](https://github.com/dknowles2/ha-pitboss)
+- **ESP32 resource limits** — Polling faster than 2 seconds may cause instability on the 65KB-RAM controller
+- **Probe sentinel value** — Temperature value 960 means "probe not connected" and is reported as unavailable
+- **Control Board 8/9 only** — Other control board types have different payload formats
+
+## Project Roadmap
+
+This is **Part 1** of a 3-part project:
+
+1. **Home Assistant Integration** (this repo) — Local grill monitoring and control
+2. **Cloud Backend** — Receives temperature data from HA, stores history, serves API
+3. **Flutter App** — Cross-platform app consuming the API for remote monitoring
+
+## Acknowledgements
+
+The MCU payload decoding in this project is ported from the **[pytboss](https://github.com/dknowles2/pytboss)** library by [@dknowles2](https://github.com/dknowles2), which reverse-engineered the Pit Boss pellet grill communication protocol. The hex payload format, byte offsets, and command codes in `decoder.py` are derived from the JavaScript functions in `pytboss/grills.json` (Control Board 8).
+
+The **[ha-pitboss](https://github.com/dknowles2/ha-pitboss)** Home Assistant integration by the same author provided architectural reference for the HA integration patterns (config flow, coordinator, entity structure).
+
+Both projects are invaluable resources for the pellet grill hacking community.
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
+## Disclaimer
+
+This project is **unofficial** and has no affiliation with any grill manufacturer or related companies. It is a community-driven project that communicates with the grill's local network interface using reverse-engineered protocols. No proprietary code or firmware has been included in this project.
+
+**Use at your own risk.** The authors are not responsible for any damage to your grill, food, property, or anything else that may result from using this software. Always monitor your grill in person during cooking — do not rely solely on this integration for safety-critical monitoring.

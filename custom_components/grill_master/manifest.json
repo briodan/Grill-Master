@@ -1,0 +1,16 @@
+{
+  "domain": "grill_master",
+  "name": "Grill Master",
+  "codeowners": [],
+  "config_flow": true,
+  "dhcp": [
+    {
+      "macaddress": "943CC6*"
+    }
+  ],
+  "documentation": "https://github.com/OWNER/GrillMaster",
+  "iot_class": "local_polling",
+  "requirements": [],
+  "version": "0.1.0",
+  "integration_type": "device"
+}

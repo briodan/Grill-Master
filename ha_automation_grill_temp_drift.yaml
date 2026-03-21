@@ -1,0 +1,34 @@
+alias: Grill Temperature Drift Alarm
+description: Alerts when grill temperature drifts more than 20F from set point for 15 seconds
+mode: single
+triggers:
+  - trigger: template
+    value_template: >-
+      {{ states('sensor.grill_master_grill_temperature') not in ['unknown', 'unavailable'] and
+         states('sensor.grill_master_grill_set_point') not in ['unknown', 'unavailable'] and
+         (states('sensor.grill_master_grill_temperature') | float -
+          states('sensor.grill_master_grill_set_point') | float) | abs > 20 }}
+    for:
+      seconds: 15
+conditions:
+  - condition: state
+    entity_id: binary_sensor.grill_master_grill_power
+    state: "on"
+actions:
+  - action: persistent_notification.create
+    data:
+      title: "Grill Temperature Alarm!"
+      message: >-
+        Grill temp is {{ states('sensor.grill_master_grill_temperature') }}F
+        but set point is {{ states('sensor.grill_master_grill_set_point') }}F.
+        Drift: {{ (states('sensor.grill_master_grill_temperature') | float -
+        states('sensor.grill_master_grill_set_point') | float) | round(0) }}F
+      notification_id: grill_temp_drift
+  - action: notify.notify
+    data:
+      title: "Grill Temperature Alarm!"
+      message: >-
+        Grill temp {{ states('sensor.grill_master_grill_temperature') }}F
+        is {{ (states('sensor.grill_master_grill_temperature') | float -
+        states('sensor.grill_master_grill_set_point') | float) | abs | round(0) }}F
+        off from set point {{ states('sensor.grill_master_grill_set_point') }}F
