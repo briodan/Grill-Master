@@ -17,12 +17,48 @@ Built for the **LG1000BL (Black Label)** series, but should work with other mode
 
 ## Supported Hardware
 
-| Model | Control Board | Status |
-|---|---|---|
-| LG1000BL (Black Label) | 8 | Tested |
-| LG0800BL, LG1200BL, LG300BL | 8 | Should work (untested) |
-| LGV4BL | 8 | Should work (untested, 130-420F range) |
-| LG800FL/FP, LG1200FL/FP (Founders) | 9 | May work (untested) |
+Any WiFi-enabled pellet grill using the Mongoose OS ESP32 controller should work. These are sold under several brands, all manufactured by Dansons Inc.
+
+### Tested
+
+| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
+|---|---|---|---|---|---|
+| Louisiana Grills | LG1000BL (Black Label 1000) | 8 | 180-600F | 2 | No |
+
+### Should Work (Control Board 8 — same decoder)
+
+| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
+|---|---|---|---|---|---|
+| Louisiana Grills | LG0800BL (Black Label 800) | 8 | 180-600F | 2 | No |
+| Louisiana Grills | LG1200BL (Black Label 1200) | 8 | 180-600F | 2 | No |
+| Louisiana Grills | LG300BL (Black Label 300) | 8 | 180-500F | 2 | No |
+| Louisiana Grills | LGV4BL (Black Label Vertical) | 8 | 130-420F | 2 | No |
+
+### May Work (Control Board 9 — Founders series, untested)
+
+| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
+|---|---|---|---|---|---|
+| Louisiana Grills | LG800FL (Founders 800) | 9 | 180-600F | 4 | Yes |
+| Louisiana Grills | LG800FP (Founders 800) | 9 | 180-600F | 4 | No |
+| Louisiana Grills | LG1200FL (Founders 1200) | 9 | 180-600F | 4 | Yes |
+| Louisiana Grills | LG1200FP (Founders 1200) | 9 | 180-600F | 4 | No |
+
+### May Work (Control Board 5 — Pit Boss, untested, different payload format)
+
+| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
+|---|---|---|---|---|---|
+| Pit Boss | PB0500SP | 5 | 180-500F | 2 | No |
+| Pit Boss | PB0820SP / PB0820SPW | 5 | 180-500F | 2 | No |
+| Pit Boss | PB1000D3 | 5 | 180-500F | 2 | No |
+| Pit Boss | PB1000NC1 | 5 | 180-500F | 2 | No |
+
+### May Work (Control Board 6 — Lexington, untested, different payload format)
+
+| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
+|---|---|---|---|---|---|
+| Pit Boss | Lexington (Wi-Fi Upgrade) | 6 | 180-500F | 2 | No |
+
+> **Note**: Control Board 5 and 6 models use a different MCU payload format than Control Board 8/9. They will likely need decoder changes to work. Control Board 8 and 9 models share the same protocol and are most likely to work out of the box.
 
 **Requirements**: The grill must be connected to your local WiFi network. This integration communicates via HTTP JSON-RPC on port 80 — no cloud account or Bluetooth required. Tested on firmware 0.2.3 (unauthenticated). Firmware 0.5.7+ may require authentication (not yet supported).
 
