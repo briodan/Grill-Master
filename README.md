@@ -62,26 +62,50 @@ Any WiFi-enabled pellet grill using the Mongoose OS ESP32 controller should work
 
 **Requirements**: The grill must be connected to your local WiFi network. This integration communicates via HTTP JSON-RPC on port 80 — no cloud account or Bluetooth required. Tested on firmware 0.2.3 (unauthenticated). Firmware 0.5.7+ may require authentication (not yet supported).
 
+## How Is This Different?
+
+There are other Home Assistant integrations for pellet grills. Here's how Grill Master compares:
+
+| | Grill Master | [ha-pitboss](https://github.com/dknowles2/ha-pitboss) | [hass_traeger](https://github.com/sebirdman/hass_traeger) | [gmg_home_assistant](https://github.com/jwhitby91/gmg_home_assistant) | [GrillBuddy](https://github.com/jeroenterheerdt/grillbuddy) |
+|---|---|---|---|---|---|
+| **Protocol** | Local HTTP (WiFi) | BLE (Bluetooth) | Cloud API | Local UDP | N/A (helper) |
+| **Range** | Anywhere on your network | ~30 ft from HA host | Internet (cloud required) | Local network | N/A |
+| **Cloud required?** | No | No | Yes (Traeger account) | No | N/A |
+| **Cloud sync** | Optional (push to your own endpoint) | No | Yes (mandatory) | No | No |
+| **DHCP discovery** | Yes | No (BLE advertisement) | No | No | N/A |
+| **Config flow UI** | Yes | Yes | Yes | No (YAML only) | Yes |
+| **Climate entity** | Yes | Yes | Yes | Yes | No |
+| **Grill brands** | Louisiana Grills, Pit Boss | Pit Boss | Traeger | Green Mountain | Any (sensor wrapper) |
+
+**Key differences:**
+
+- **Local HTTP, not Bluetooth** — ha-pitboss talks to the same Mongoose OS controller we do, but over BLE. That limits you to ~30 feet from your HA server. Grill Master uses the grill's WiFi HTTP interface, so it works from anywhere on your network.
+- **No cloud dependency** — Traeger integrations require a cloud account and internet connection. Grill Master talks directly to the grill on your LAN. If your internet goes down, your grill monitoring doesn't.
+- **Optional cloud sync** — If you *want* cloud data (for a companion app, dashboards, etc.), Grill Master can POST temperature data to any URL you configure. You own the endpoint.
+- **DHCP discovery** — Grill Master auto-detects your grill on the network and handles IP changes. No need to hunt for the IP address.
+- **Temperature alarms** — None of the existing integrations have built-in temperature alarms. This is Grill Master's [#1 priority feature](documentation/features/temperature-alarms.md). GrillBuddy adds alarm functionality as a separate helper, but it's a generic layer on top of any sensor — not grill-aware.
+
 ## Installation
 
 ### HACS (Recommended)
 
-1. Open HACS in your Home Assistant instance
-2. Click the 3-dot menu → **Custom repositories**
-3. Add this repository URL and select **Integration** as the category
-4. Click **Download**
-5. Restart Home Assistant
+[![Open HACS Repository](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=dvrtech-us&repository=Grill-Master&category=integration)
+
+1. Click the badge above, or open HACS → search for **"Grill Master"**
+2. Click **Download**
+3. Restart Home Assistant
 
 ### Manual
 
-1. Copy the `custom_components/grill_master/` folder into your Home Assistant `config/custom_components/` directory
-2. Restart Home Assistant
+1. Download the [latest release](https://github.com/dvrtech-us/Grill-Master/releases) or clone the repository
+2. Copy the `custom_components/grill_master/` folder into your Home Assistant `config/custom_components/` directory
+3. Restart Home Assistant
 
 ### Setup
 
 1. Go to **Settings → Devices & Services → + Add Integration**
 2. Search for **"Grill Master"**
-3. Enter your grill's IP address
+3. Enter your grill's IP address (or let DHCP discovery find it automatically)
 4. (Optional) Configure cloud sync endpoint
 5. Done — sensors appear immediately
 
