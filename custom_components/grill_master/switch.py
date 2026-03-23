@@ -19,10 +19,13 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .api import GrillCommandError, GrillConnectionError, GrillMasterApi
-from .const import DOMAIN, MANUFACTURER, MODEL
+from .const import CONF_DEVICE_ID, DOMAIN, MANUFACTURER, MODEL
 from .coordinator import GrillMasterCoordinator
 
 _LOGGER = logging.getLogger(__name__)
+
+# Device ID prefixes for models known to have a physical light (Founders series)
+_LIGHT_SUPPORTED_PREFIXES = ("LFS-",)
 
 _LIGHT_NOT_SUPPORTED_MSG = (
     "This grill model may not have a light. "
@@ -75,6 +78,13 @@ class GrillMasterLightSwitch(
             model=MODEL,
         )
         self._light_failed = False
+
+        # Disable by default for models that don't have a physical light.
+        # Users can enable it manually in the entity registry if needed.
+        device_id = entry.data.get(CONF_DEVICE_ID, "")
+        self._attr_entity_registry_enabled_default = device_id.startswith(
+            _LIGHT_SUPPORTED_PREFIXES
+        )
 
     @property
     def is_on(self) -> bool | None:
