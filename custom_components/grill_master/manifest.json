@@ -4,11 +4,14 @@
   "codeowners": [],
   "config_flow": true,
   "dhcp": [
-    {
-      "macaddress": "943CC6*"
-    }
+    { "macaddress": "240AC4*" },
+    { "macaddress": "30AEA4*" },
+    { "macaddress": "943CC6*" },
+    { "macaddress": "A4CF12*" },
+    { "macaddress": "CC50E3*" },
+    { "macaddress": "EC94CB*" }
   ],
-  "documentation": "https://github.com/OWNER/GrillMaster",
+  "documentation": "https://github.com/dvrtech-us/Grill-Master",
   "iot_class": "local_polling",
   "requirements": [],
   "version": "0.1.0",

@@ -143,7 +143,13 @@ There are other Home Assistant integrations for pellet grills. Here's how Grill 
 |---|---|
 | Light | Toggle grill light on/off (only functional on models with a light — e.g., LG800FL, LG1200FL) |
 
-> **Note**: Not all models have a physical light. The LG1000BL, LG0800BL, and most Pit Boss models do **not** have a light. The switch entity is always created but will have no effect on grills without the hardware. The Founders series (LG800FL, LG1200FL) does have a light.
+> **Note**: Not all models have a physical light. The LG1000BL, LG0800BL, and most Pit Boss models do **not** have a light. The Founders series (LG800FL, LG1200FL) does have a light.
+>
+> The light switch is **disabled by default** on models without a light. If your grill has a light and it wasn't auto-detected, you can enable it manually:
+> 1. Go to **Settings → Devices & Services → Grill Master** → click your device
+> 2. Click **"+1 disabled entity"** (or go to the **Entities** tab)
+> 3. Find the **Light** switch and click it
+> 4. Click the **gear icon** → toggle **Enabled** on → **Update**
 
 ## Example Automation: Temperature Drift Alarm
 
