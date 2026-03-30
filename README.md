@@ -66,16 +66,16 @@ Any WiFi-enabled pellet grill using the Mongoose OS ESP32 controller should work
 
 There are other Home Assistant integrations for pellet grills. Here's how Grill Master compares:
 
-|                     | Grill Master                         | [ha-pitboss](https://github.com/dknowles2/ha-pitboss) | [hass_traeger](https://github.com/sebirdman/hass_traeger) | [gmg_home_assistant](https://github.com/jwhitby91/gmg_home_assistant) | [GrillBuddy](https://github.com/jeroenterheerdt/grillbuddy) |
-| ------------------- | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **Protocol**        | Local HTTP (WiFi)                    | BLE (Bluetooth)                                       | Cloud API                                                 | Local UDP                                                             | N/A (helper)                                                |
-| **Range**           | Anywhere on your network             | ~30 ft from HA host                                   | Internet (cloud required)                                 | Local network                                                         | N/A                                                         |
-| **Cloud required?** | No                                   | No                                                    | Yes (Traeger account)                                     | No                                                                    | N/A                                                         |
-| **Cloud sync**      | Optional (push to your own endpoint) | No                                                    | Yes (mandatory)                                           | No                                                                    | No                                                          |
-| **DHCP discovery**  | Yes                                  | No (BLE advertisement)                                | No                                                        | No                                                                    | N/A                                                         |
-| **Config flow UI**  | Yes                                  | Yes                                                   | Yes                                                       | No (YAML only)                                                        | Yes                                                         |
-| **Climate entity**  | Yes                                  | Yes                                                   | Yes                                                       | Yes                                                                   | No                                                          |
-| **Grill brands**    | Louisiana Grills, Pit Boss           | Pit Boss                                              | Traeger                                                   | Green Mountain                                                        | Any (sensor wrapper)                                        |
+|                     | Grill Master                         | [ha-pitboss](https://github.com/dknowles2/ha-pitboss) |
+| ------------------- | ------------------------------------ | ----------------------------------------------------- |
+| **Protocol**        | Local HTTP (WiFi)                    | BLE (Bluetooth)                                       |
+| **Range**           | Anywhere on your network             | ~30 ft from HA host                                   |
+| **Cloud required?** | No                                   | No                                                    |
+| **Cloud sync**      | Optional (push to your own endpoint) | No                                                    |
+| **DHCP discovery**  | Yes                                  | No (BLE advertisement)                                |
+| **Config flow UI**  | Yes                                  | Yes                                                   |
+| **Climate entity**  | Yes                                  | Yes                                                   |
+| **Grill brands**    | Louisiana Grills, Pit Boss           | Louisiana Grills, Pit Boss                            |
 
 **Key differences:**
 
