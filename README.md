@@ -21,42 +21,42 @@ Any WiFi-enabled pellet grill using the Mongoose OS ESP32 controller should work
 
 ### Tested
 
-| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
-|---|---|---|---|---|---|
-| Louisiana Grills | LG1000BL (Black Label 1000) | 8 | 180-600F | 2 | No |
+| Manufacturer     | Model                       | Control Board | Temp Range | Probes | Light |
+| ---------------- | --------------------------- | ------------- | ---------- | ------ | ----- |
+| Louisiana Grills | LG1000BL (Black Label 1000) | 8             | 180-600F   | 2      | No    |
 
 ### Should Work (Control Board 8 — same decoder)
 
-| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
-|---|---|---|---|---|---|
-| Louisiana Grills | LG0800BL (Black Label 800) | 8 | 180-600F | 2 | No |
-| Louisiana Grills | LG1200BL (Black Label 1200) | 8 | 180-600F | 2 | No |
-| Louisiana Grills | LG300BL (Black Label 300) | 8 | 180-500F | 2 | No |
-| Louisiana Grills | LGV4BL (Black Label Vertical) | 8 | 130-420F | 2 | No |
+| Manufacturer     | Model                         | Control Board | Temp Range | Probes | Light |
+| ---------------- | ----------------------------- | ------------- | ---------- | ------ | ----- |
+| Louisiana Grills | LG0800BL (Black Label 800)    | 8             | 180-600F   | 2      | No    |
+| Louisiana Grills | LG1200BL (Black Label 1200)   | 8             | 180-600F   | 2      | No    |
+| Louisiana Grills | LG300BL (Black Label 300)     | 8             | 180-500F   | 2      | No    |
+| Louisiana Grills | LGV4BL (Black Label Vertical) | 8             | 130-420F   | 2      | No    |
 
 ### May Work (Control Board 9 — Founders series, untested)
 
-| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
-|---|---|---|---|---|---|
-| Louisiana Grills | LG800FL (Founders 800) | 9 | 180-600F | 4 | Yes |
-| Louisiana Grills | LG800FP (Founders 800) | 9 | 180-600F | 4 | No |
-| Louisiana Grills | LG1200FL (Founders 1200) | 9 | 180-600F | 4 | Yes |
-| Louisiana Grills | LG1200FP (Founders 1200) | 9 | 180-600F | 4 | No |
+| Manufacturer     | Model                    | Control Board | Temp Range | Probes | Light |
+| ---------------- | ------------------------ | ------------- | ---------- | ------ | ----- |
+| Louisiana Grills | LG800FL (Founders 800)   | 9             | 180-600F   | 4      | Yes   |
+| Louisiana Grills | LG800FP (Founders 800)   | 9             | 180-600F   | 4      | No    |
+| Louisiana Grills | LG1200FL (Founders 1200) | 9             | 180-600F   | 4      | Yes   |
+| Louisiana Grills | LG1200FP (Founders 1200) | 9             | 180-600F   | 4      | No    |
 
 ### May Work (Control Board 5 — Pit Boss, untested, different payload format)
 
-| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
-|---|---|---|---|---|---|
-| Pit Boss | PB0500SP | 5 | 180-500F | 2 | No |
-| Pit Boss | PB0820SP / PB0820SPW | 5 | 180-500F | 2 | No |
-| Pit Boss | PB1000D3 | 5 | 180-500F | 2 | No |
-| Pit Boss | PB1000NC1 | 5 | 180-500F | 2 | No |
+| Manufacturer | Model                | Control Board | Temp Range | Probes | Light |
+| ------------ | -------------------- | ------------- | ---------- | ------ | ----- |
+| Pit Boss     | PB0500SP             | 5             | 180-500F   | 2      | No    |
+| Pit Boss     | PB0820SP / PB0820SPW | 5             | 180-500F   | 2      | No    |
+| Pit Boss     | PB1000D3             | 5             | 180-500F   | 2      | No    |
+| Pit Boss     | PB1000NC1            | 5             | 180-500F   | 2      | No    |
 
 ### May Work (Control Board 6 — Lexington, untested, different payload format)
 
-| Manufacturer | Model | Control Board | Temp Range | Probes | Light |
-|---|---|---|---|---|---|
-| Pit Boss | Lexington (Wi-Fi Upgrade) | 6 | 180-500F | 2 | No |
+| Manufacturer | Model                     | Control Board | Temp Range | Probes | Light |
+| ------------ | ------------------------- | ------------- | ---------- | ------ | ----- |
+| Pit Boss     | Lexington (Wi-Fi Upgrade) | 6             | 180-500F   | 2      | No    |
 
 > **Note**: Control Board 5 and 6 models use a different MCU payload format than Control Board 8/9. They will likely need decoder changes to work. Control Board 8 and 9 models share the same protocol and are most likely to work out of the box.
 
@@ -66,22 +66,22 @@ Any WiFi-enabled pellet grill using the Mongoose OS ESP32 controller should work
 
 There are other Home Assistant integrations for pellet grills. Here's how Grill Master compares:
 
-| | Grill Master | [ha-pitboss](https://github.com/dknowles2/ha-pitboss) | [hass_traeger](https://github.com/sebirdman/hass_traeger) | [gmg_home_assistant](https://github.com/jwhitby91/gmg_home_assistant) | [GrillBuddy](https://github.com/jeroenterheerdt/grillbuddy) |
-|---|---|---|---|---|---|
-| **Protocol** | Local HTTP (WiFi) | BLE (Bluetooth) | Cloud API | Local UDP | N/A (helper) |
-| **Range** | Anywhere on your network | ~30 ft from HA host | Internet (cloud required) | Local network | N/A |
-| **Cloud required?** | No | No | Yes (Traeger account) | No | N/A |
-| **Cloud sync** | Optional (push to your own endpoint) | No | Yes (mandatory) | No | No |
-| **DHCP discovery** | Yes | No (BLE advertisement) | No | No | N/A |
-| **Config flow UI** | Yes | Yes | Yes | No (YAML only) | Yes |
-| **Climate entity** | Yes | Yes | Yes | Yes | No |
-| **Grill brands** | Louisiana Grills, Pit Boss | Pit Boss | Traeger | Green Mountain | Any (sensor wrapper) |
+|                     | Grill Master                         | [ha-pitboss](https://github.com/dknowles2/ha-pitboss) | [hass_traeger](https://github.com/sebirdman/hass_traeger) | [gmg_home_assistant](https://github.com/jwhitby91/gmg_home_assistant) | [GrillBuddy](https://github.com/jeroenterheerdt/grillbuddy) |
+| ------------------- | ------------------------------------ | ----------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **Protocol**        | Local HTTP (WiFi)                    | BLE (Bluetooth)                                       | Cloud API                                                 | Local UDP                                                             | N/A (helper)                                                |
+| **Range**           | Anywhere on your network             | ~30 ft from HA host                                   | Internet (cloud required)                                 | Local network                                                         | N/A                                                         |
+| **Cloud required?** | No                                   | No                                                    | Yes (Traeger account)                                     | No                                                                    | N/A                                                         |
+| **Cloud sync**      | Optional (push to your own endpoint) | No                                                    | Yes (mandatory)                                           | No                                                                    | No                                                          |
+| **DHCP discovery**  | Yes                                  | No (BLE advertisement)                                | No                                                        | No                                                                    | N/A                                                         |
+| **Config flow UI**  | Yes                                  | Yes                                                   | Yes                                                       | No (YAML only)                                                        | Yes                                                         |
+| **Climate entity**  | Yes                                  | Yes                                                   | Yes                                                       | Yes                                                                   | No                                                          |
+| **Grill brands**    | Louisiana Grills, Pit Boss           | Pit Boss                                              | Traeger                                                   | Green Mountain                                                        | Any (sensor wrapper)                                        |
 
 **Key differences:**
 
 - **Local HTTP, not Bluetooth** — ha-pitboss talks to the same Mongoose OS controller we do, but over BLE. That limits you to ~30 feet from your HA server. Grill Master uses the grill's WiFi HTTP interface, so it works from anywhere on your network.
 - **No cloud dependency** — Traeger integrations require a cloud account and internet connection. Grill Master talks directly to the grill on your LAN. If your internet goes down, your grill monitoring doesn't.
-- **Optional cloud sync** — If you *want* cloud data (for a companion app, dashboards, etc.), Grill Master can POST temperature data to any URL you configure. You own the endpoint.
+- **Optional cloud sync** — If you _want_ cloud data (for a companion app, dashboards, etc.), Grill Master can POST temperature data to any URL you configure. You own the endpoint.
 - **DHCP discovery** — Grill Master auto-detects your grill on the network and handles IP changes. No need to hunt for the IP address.
 - **Temperature alarms** — None of the existing integrations have built-in temperature alarms. This is Grill Master's [#1 priority feature](documentation/features/temperature-alarms.md). GrillBuddy adds alarm functionality as a separate helper, but it's a generic layer on top of any sensor — not grill-aware.
 
@@ -112,40 +112,45 @@ There are other Home Assistant integrations for pellet grills. Here's how Grill 
 ## Entities
 
 ### Sensors
-| Entity | Description |
-|---|---|
-| Grill Temperature | Current temperature inside the grill |
-| Grill Set Point | Target temperature the grill is maintaining |
-| Probe 1 Temperature | Meat probe 1 reading |
-| Probe 1 Target | Meat probe 1 target temperature |
-| Probe 2 Temperature | Meat probe 2 reading |
+
+| Entity              | Description                                 |
+| ------------------- | ------------------------------------------- |
+| Grill Temperature   | Current temperature inside the grill        |
+| Grill Set Point     | Target temperature the grill is maintaining |
+| Probe 1 Temperature | Meat probe 1 reading                        |
+| Probe 1 Target      | Meat probe 1 target temperature             |
+| Probe 2 Temperature | Meat probe 2 reading                        |
 
 ### Binary Sensors
-| Entity | Description |
-|---|---|
-| Grill Power | Whether the grill is running |
-| Fan | Fan state |
-| Light | Light state |
-| Auger Motor | Pellet auger motor state |
-| Heater | Igniter/heater state |
-| Primer | Primer motor state |
-| No Pellets | Pellet hopper empty warning |
-| High Temperature Error | Overtemp error |
-| Fan/Igniter/Motor Error | Component error flags |
+
+| Entity                  | Description                  |
+| ----------------------- | ---------------------------- |
+| Grill Power             | Whether the grill is running |
+| Fan                     | Fan state                    |
+| Light                   | Light state                  |
+| Auger Motor             | Pellet auger motor state     |
+| Heater                  | Igniter/heater state         |
+| Primer                  | Primer motor state           |
+| No Pellets              | Pellet hopper empty warning  |
+| High Temperature Error  | Overtemp error               |
+| Fan/Igniter/Motor Error | Component error flags        |
 
 ### Climate
-| Entity | Description |
-|---|---|
-| Grill | Set temperature (180-600F, 5F steps), HEAT/OFF mode |
+
+| Entity | Description                                         |
+| ------ | --------------------------------------------------- |
+| Grill  | Set temperature (180-600F, 5F steps), HEAT/OFF mode |
 
 ### Switch
-| Entity | Description |
-|---|---|
-| Light | Toggle grill light on/off (only functional on models with a light — e.g., LG800FL, LG1200FL) |
+
+| Entity | Description                                                                                  |
+| ------ | -------------------------------------------------------------------------------------------- |
+| Light  | Toggle grill light on/off (only functional on models with a light — e.g., LG800FL, LG1200FL) |
 
 > **Note**: Not all models have a physical light. The LG1000BL, LG0800BL, and most Pit Boss models do **not** have a light. The Founders series (LG800FL, LG1200FL) does have a light.
 >
 > The light switch is **disabled by default** on models without a light. If your grill has a light and it wasn't auto-detected, you can enable it manually:
+>
 > 1. Go to **Settings → Devices & Services → Grill Master** → click your device
 > 2. Click **"+1 disabled entity"** (or go to the **Entities** tab)
 > 3. Find the **Light** switch and click it
@@ -202,14 +207,6 @@ The full algorithm is documented in `documentation/features/grill-communication/
 - **ESP32 resource limits** — Polling faster than 2 seconds may cause instability on the 65KB-RAM controller
 - **Probe sentinel value** — Temperature value 960 means "probe not connected" and is reported as unavailable
 - **Control Board 8/9 only** — Other control board types have different payload formats
-
-## Project Roadmap
-
-This is **Part 1** of a 3-part project:
-
-1. **Home Assistant Integration** (this repo) — Local grill monitoring and control
-2. **Cloud Backend** — Receives temperature data from HA, stores history, serves API
-3. **Flutter App** — Cross-platform app consuming the API for remote monitoring
 
 ## Acknowledgements
 
