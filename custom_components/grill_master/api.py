@@ -18,7 +18,7 @@ from .const import (
     CMD_POWER_OFF,
     DEFAULT_TIMEOUT,
 )
-from .decoder import encode_set_temperature
+from .decoder import encode_set_probe1_target, encode_set_temperature
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -176,6 +176,21 @@ class GrillMasterApi:
             RPC response dict.
         """
         command = encode_set_temperature(temp_f)
+        return await self.send_command(command)
+
+    async def set_probe_1_target(self, temp_f: int) -> dict[str, Any]:
+        """Set probe 1's target (done) temperature.
+
+        Only probe 1 has a settable target on the LBL control board
+        (LG1000BL) - there is no equivalent command for probes 2+.
+
+        Args:
+            temp_f: Target probe temperature in Fahrenheit.
+
+        Returns:
+            RPC response dict.
+        """
+        command = encode_set_probe1_target(temp_f)
         return await self.send_command(command)
 
     async def turn_off(self) -> dict[str, Any]:

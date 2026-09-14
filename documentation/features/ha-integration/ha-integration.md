@@ -24,7 +24,8 @@ Home Assistant
         ├── Sensor entities (grill temp, probes, set point)
         ├── Binary sensor entities (power, errors, fan, light, motor)
         ├── Climate entity (set temperature, HEAT/OFF mode)
-        └── Switch entity (light on/off)
+        ├── Switch entity (light on/off)
+        └── Number entity (probe 1 target/done temperature)
 ```
 
 ## Key Files
@@ -37,10 +38,12 @@ Home Assistant
 | `coordinator.py` | `GrillMasterCoordinator` - polling, decoding, cloud sync |
 | `config_flow.py` | Two-step UI setup: grill IP + optional cloud sync |
 | `__init__.py` | Entry setup, coordinator init, platform forwarding |
+| `temp_unit.py` | Shared Fahrenheit <-> HA-display-unit conversion helpers |
 | `sensor.py` | 5 temperature sensors (grill, set point, probe 1/2, probe 1 target) |
 | `binary_sensor.py` | 11 binary sensors (power, fan, light, motor, heater, errors) |
 | `climate.py` | Climate entity for temperature control (180-600F, 5F steps) |
 | `switch.py` | Light switch entity |
+| `number.py` | Settable Probe 1 Target (done) temperature entity |
 
 ## Payload Decoding
 
@@ -112,7 +115,17 @@ always win.
 ### Set Temperature Command Encoding
 
 `FE0501` + hex(hundreds) + hex(tens) + hex(ones) + `FF`
-- Example: 250F → `FE050102050000FF`
+- Example: 250F → `FE0501020500FF`
+
+### Set Probe 1 Target Command Encoding
+
+`FE0502` + hex(hundreds) + hex(tens) + hex(ones) + `FF` - same shape as the
+grill setpoint command, one command byte over (`02` instead of `01`).
+Ported from the LBL control board's `set-prove-1-temperature` slug in
+pytboss's `grills.json` (vendor's own typo for "probe"). Only probe 1 has
+a settable target on this board - there is no equivalent command for
+probes 2+.
+- Example: 160F → `FE0502010600FF`
 
 ## Cloud Sync
 

@@ -89,7 +89,8 @@ Fields to decode:
 | Turn Primer Motor Off | `FE0800FF` | |
 | Set Celsius | `FE0902FF` | |
 | Set Fahrenheit | `FE0901FF` | |
-| Set Grill Temperature | Dynamic | See pytboss for encoding |
+| Set Grill Temperature | Dynamic | `FE0501`+hex(hundreds)+hex(tens)+hex(ones)+`FF` |
+| Set Probe 1 Target Temperature | Dynamic | `FE0502`+hex(hundreds)+hex(tens)+hex(ones)+`FF`. No equivalent for probes 2+ |
 
 ## C# Implementation Notes
 

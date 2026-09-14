@@ -23,7 +23,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.util.unit_conversion import TemperatureConverter
 
 from .api import GrillMasterApi
 from .const import (
@@ -35,6 +34,7 @@ from .const import (
     TEMP_STEP_F,
 )
 from .coordinator import GrillMasterCoordinator
+from .temp_unit import bounds_to_display_unit, display_unit, to_display_unit, to_fahrenheit
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -78,39 +78,15 @@ class GrillMasterClimate(
         # The grill's MCU always speaks Fahrenheit in 5-degree steps.
         # Present the entity in whichever unit this Home Assistant
         # instance is configured for, converting bounds/step to match.
-        self._attr_temperature_unit = coordinator.hass.config.units.temperature_unit
-        if self._attr_temperature_unit == UnitOfTemperature.CELSIUS:
-            self._attr_min_temp = round(
-                TemperatureConverter.convert(
-                    MIN_TEMP_F, UnitOfTemperature.FAHRENHEIT, UnitOfTemperature.CELSIUS
-                )
-            )
-            self._attr_max_temp = round(
-                TemperatureConverter.convert(
-                    MAX_TEMP_F, UnitOfTemperature.FAHRENHEIT, UnitOfTemperature.CELSIUS
-                )
-            )
-            self._attr_target_temperature_step = 1
-        else:
-            self._attr_min_temp = MIN_TEMP_F
-            self._attr_max_temp = MAX_TEMP_F
-            self._attr_target_temperature_step = TEMP_STEP_F
-
-    def _f_to_display_unit(self, temp_f: float) -> float:
-        """Convert a Fahrenheit value from the grill into the display unit."""
-        if self._attr_temperature_unit == UnitOfTemperature.CELSIUS:
-            return TemperatureConverter.convert(
-                temp_f, UnitOfTemperature.FAHRENHEIT, UnitOfTemperature.CELSIUS
-            )
-        return temp_f
-
-    def _display_unit_to_f(self, temperature: float) -> float:
-        """Convert a value in the display unit back to Fahrenheit for the grill."""
-        if self._attr_temperature_unit == UnitOfTemperature.CELSIUS:
-            return TemperatureConverter.convert(
-                temperature, UnitOfTemperature.CELSIUS, UnitOfTemperature.FAHRENHEIT
-            )
-        return temperature
+        self._attr_temperature_unit = display_unit(coordinator.hass)
+        self._attr_min_temp, self._attr_max_temp = bounds_to_display_unit(
+            MIN_TEMP_F, MAX_TEMP_F, self._attr_temperature_unit
+        )
+        self._attr_target_temperature_step = (
+            1
+            if self._attr_temperature_unit == UnitOfTemperature.CELSIUS
+            else TEMP_STEP_F
+        )
 
     @property
     def current_temperature(self) -> float | None:
@@ -120,7 +96,7 @@ class GrillMasterClimate(
         temp = self.coordinator.data.get("grill_temp")
         if not temp or temp <= 0:
             return None
-        return self._f_to_display_unit(temp)
+        return to_display_unit(temp, self._attr_temperature_unit)
 
     @property
     def target_temperature(self) -> float | None:
@@ -130,7 +106,7 @@ class GrillMasterClimate(
         temp = self.coordinator.data.get("grill_set_temp")
         if not temp or temp <= 0:
             return None
-        return self._f_to_display_unit(temp)
+        return to_display_unit(temp, self._attr_temperature_unit)
 
     @property
     def hvac_mode(self) -> HVACMode:
@@ -148,7 +124,7 @@ class GrillMasterClimate(
 
         # The grill's MCU only understands Fahrenheit in 5-degree steps,
         # regardless of what unit was used to request the temperature.
-        temp_f = self._display_unit_to_f(temperature)
+        temp_f = to_fahrenheit(temperature, self._attr_temperature_unit)
         temp_f = int(round(temp_f / TEMP_STEP_F) * TEMP_STEP_F)
         temp_f = max(MIN_TEMP_F, min(MAX_TEMP_F, temp_f))
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 DOMAIN = "grill_master"
-PLATFORMS = ["sensor", "binary_sensor", "climate", "switch"]
+PLATFORMS = ["sensor", "binary_sensor", "climate", "switch", "number"]
 
 # Config keys
 CONF_HOST = "host"
@@ -34,6 +34,13 @@ CMD_SET_FAHRENHEIT = "FE0901FF"
 MIN_TEMP_F = 180
 MAX_TEMP_F = 600
 TEMP_STEP_F = 5
+
+# Probe 1 target (done) temperature bounds. Not hardware-enforced - the LBL
+# control board accepts any 3-digit value - these are a sane UI range for a
+# meat probe alarm.
+PROBE_TARGET_MIN_F = 32
+PROBE_TARGET_MAX_F = 210
+PROBE_TARGET_STEP_F = 1
 
 # Config data keys
 CONF_MAC = "mac"

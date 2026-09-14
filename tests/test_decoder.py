@@ -51,6 +51,7 @@ convert_temperature = decoder.convert_temperature
 decode_status = decoder.decode_status
 decode_temperatures = decoder.decode_temperatures
 encode_set_temperature = decoder.encode_set_temperature
+encode_set_probe1_target = decoder.encode_set_probe1_target
 PROBE_NOT_CONNECTED_VALUE = decoder.PROBE_NOT_CONNECTED_VALUE
 
 # ============================================================================
@@ -339,6 +340,36 @@ class TestEncodeSetTemperature:
             assert decoded == temp, f"Roundtrip failed for {temp}: got {decoded}"
 
 
+class TestEncodeSetProbe1Target:
+    """Tests for encode_set_probe1_target()."""
+
+    def test_160(self):
+        # 160 -> hundreds=1, tens=6, ones=0 -> 01 06 00
+        result = encode_set_probe1_target(160)
+        assert result == "FE0502010600FF"
+
+    def test_204(self):
+        # 204 -> hundreds=2, tens=0, ones=4 -> 02 00 04
+        result = encode_set_probe1_target(204)
+        assert result == "FE0502020004FF"
+
+    def test_uses_different_command_byte_than_grill_temperature(self):
+        """Probe 1's command differs from the grill setpoint only in byte 4."""
+        probe_cmd = encode_set_probe1_target(200)
+        grill_cmd = encode_set_temperature(200)
+        assert probe_cmd == "FE0502020000FF"
+        assert grill_cmd == "FE0501020000FF"
+
+    def test_roundtrip(self):
+        for temp in [32, 100, 145, 160, 165, 180, 195, 204, 210]:
+            cmd = encode_set_probe1_target(temp)
+            h = int(cmd[6:8], 16)
+            t = int(cmd[8:10], 16)
+            o = int(cmd[10:12], 16)
+            decoded = h * 100 + t * 10 + o
+            assert decoded == temp, f"Roundtrip failed for {temp}: got {decoded}"
+
+
 class TestIntegration:
     """Integration tests combining decoder + live grill data."""
 
@@ -397,6 +428,7 @@ if __name__ == "__main__":
         TestDecodeTemperatures,
         TestDecodeStatus,
         TestEncodeSetTemperature,
+        TestEncodeSetProbe1Target,
         TestIntegration,
     ]
 

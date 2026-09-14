@@ -170,11 +170,21 @@ def decode_temperatures(message: str) -> dict[str, Any] | None:
     }
 
 
-def encode_set_temperature(temp_f: int) -> str:
-    """Encode a temperature setpoint into a hex command string.
+def _encode_temperature_command(command_byte: str, temp_f: int) -> str:
+    """Encode a temperature into an FE05<command_byte> hex command string.
 
-    Ported from pytboss grills.json control board 8 command ID 97.
-    Produces: FE0501 + hex(hundreds) + hex(tens) + hex(ones) + FF
+    Produces: FE05<command_byte> + hex(hundreds) + hex(tens) + hex(ones) + FF
+    """
+    hundreds = temp_f // 100
+    tens = (temp_f % 100) // 10
+    ones = temp_f % 10
+    return f"FE05{command_byte}{hundreds:02X}{tens:02X}{ones:02X}FF"
+
+
+def encode_set_temperature(temp_f: int) -> str:
+    """Encode a grill temperature setpoint into a hex command string.
+
+    Ported from pytboss grills.json LBL control board slug "set-temperature".
 
     Args:
         temp_f: Temperature in Fahrenheit (180-600, in increments of 5).
@@ -182,7 +192,21 @@ def encode_set_temperature(temp_f: int) -> str:
     Returns:
         Hex command string, e.g. "FE050102050000FF" for 250F.
     """
-    hundreds = temp_f // 100
-    tens = (temp_f % 100) // 10
-    ones = temp_f % 10
-    return f"FE0501{hundreds:02X}{tens:02X}{ones:02X}FF"
+    return _encode_temperature_command("01", temp_f)
+
+
+def encode_set_probe1_target(temp_f: int) -> str:
+    """Encode probe 1's target (done) temperature into a hex command string.
+
+    Ported from pytboss grills.json LBL control board slug
+    "set-prove-1-temperature" [sic, vendor's own typo for "probe"]. Only
+    probe 1 has a settable target on this control board - there is no
+    equivalent command for probes 2+.
+
+    Args:
+        temp_f: Target probe temperature in Fahrenheit.
+
+    Returns:
+        Hex command string, e.g. "FE0502010600FF" for a 160F target.
+    """
+    return _encode_temperature_command("02", temp_f)
